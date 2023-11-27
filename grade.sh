@@ -21,28 +21,31 @@ then
     echo 'Will now start grading your submission'
 else
     echo 'Could not find file ListExamples.java in the given submission'
-    echo 'Score: 0/4'
+    echo 'Score: 0/1'
     exit 1
 fi
 
 cp student-submission/ListExamples.java ./grading-area
+cp TestListExamples.java ./grading-area
+cp -r lib ./grading-area
 
+cd grading-area
 javac -cp $CPATH *.java
 java -cp $CPATH org.junit.runner.JUnitCore TestListExamples > junit-output.txt
 
-FAILURES=`grep -c FAILURES!!! junit-output.txt`
+FAILS=`grep -c FAILURES!!! junit-output.txt`
 
-if [[ $FAILURES -eq 0 ]]
+if [[ $FAILS -eq 0 ]]
 then
     echo 'All of your tests passed, nice job!'
-    echo 'Score: 4/4'
+    echo 'Score: 1/1'
 else
-    RESULT_LINE=`grep "Tests run:" junit-output.txt`
+    RESULT=`grep "Tests run:" junit-output.txt`
 
     # The ${VAR:N:M} syntax gets a substring of length M starting at index N
-    COUNT=${RESULT_LINE:25:1}
+    COUNT=${RESULT:25:1}
 
     echo "JUnit output was:"
     cat junit-output.txt
-    echo "Score: $COUNT/4"
+    echo "Score: $COUNT/1"
 fi
