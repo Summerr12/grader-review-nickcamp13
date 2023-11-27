@@ -14,3 +14,35 @@ echo 'Finished cloning'
 
 # Then, add here code to compile and run, and do any post-processing of the
 # tests
+
+if [[ -f student-submission/ListExamples.java ]]
+then
+    echo 'Found ListExamples.java in given submission'
+    echo 'Will now start grading your submission'
+else
+    echo 'Could not find file ListExamples.java in the given submission'
+    echo 'Score: 0/4'
+    exit 1
+fi
+
+cp student-submission/ListExamples.java ./grading-area
+
+javac -cp $CPATH *.java
+java -cp $CPATH org.junit.runner.JUnitCore TestListExamples > junit-output.txt
+
+FAILURES=`grep -c FAILURES!!! junit-output.txt`
+
+if [[ $FAILURES -eq 0 ]]
+then
+    echo 'All of your tests passed, nice job!'
+    echo 'Score: 4/4'
+else
+    RESULT_LINE=`grep "Tests run:" junit-output.txt`
+
+    # The ${VAR:N:M} syntax gets a substring of length M starting at index N
+    COUNT=${RESULT_LINE:25:1}
+
+    echo "JUnit output was:"
+    cat junit-output.txt
+    echo "Score: $COUNT/4"
+fi
